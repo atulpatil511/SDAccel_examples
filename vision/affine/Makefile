@@ -15,8 +15,8 @@ DEVICE := $(DEVICES)
 XCLBIN := ./xclbin
 DSA := $(call device2sandsa, $(DEVICE))
 
-CXX := $(XILINX_SDX)/bin/xcpp
-XOCC := $(XILINX_SDX)/bin/xocc
+#CXX := $(XILINX_SDX)/bin/xcpp
+#XOCC := $(XILINX_SDX)/bin/xocc
 
 CXXFLAGS := $(opencl_CXXFLAGS) -Wall -O0 -g -std=c++14
 LDFLAGS := $(opencl_LDFLAGS)
