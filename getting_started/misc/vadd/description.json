@@ -1,0 +1,33 @@
+{
+    "runtime": ["OpenCL"],
+    "example" : "Vector Addition",
+    "overview" : [
+        "Simple example of vector addition."
+    ],
+    "os": [
+        "Linux"
+    ],
+    "host_exe": "vadd",
+    "em_cmd" : "./vadd",
+    "hw_cmd" : "../../../utility/nimbix/nimbix-run.py -- ./vadd",
+    "libs": [
+        "xcl2"
+    ], 
+    "containers": [
+    {
+        "name": "krnl_vadd",        
+        "accelerators": [
+        {
+            "name": "krnl_vadd", 
+            "location": "src/krnl_vadd.cl"
+        }
+       ]
+     }                
+    ],
+    "contributors" : [
+        {
+            "group": "Xilinx",
+            "url" : "http://www.xilinx.com"
+        }
+    ]
+}

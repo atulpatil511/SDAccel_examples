@@ -1,0 +1,40 @@
+{
+    "runtime": ["OpenCL"],
+    "example": "Loop Fusion (C)",
+    "overview": [
+        "This example will demonstrate how to fuse two loops into one to improve the performance of an OpenCL  C/C++ Kernel."
+    ],
+    "key_concepts": [ "Kernel Optimization", "Loop Fusion", "Loop Pipelining" ],
+    "keywords": [ "#pragma HLS PIPELINE"],
+    "os": [
+        "Linux"
+    ],
+    "libs": [
+        "xcl2"
+    ],
+    "nboard":["xilinx:kcu1500:dynamic", "xilinx_kcu1500_dynamic_5_0"],
+    "host_exe": "loop_fusion",
+    "em_cmd": "./loop_fusion",
+    "hw_cmd": "../../utility/nimbix/nimbix-run.py -- ./loop_fusion",
+    "containers": [
+        {
+            "name": "nearest_neighbor",
+            "accelerators": [
+                {
+                    "name": "nearest_neighbor_loop_fusion", 
+                    "location": "src/nearest_neighbor.cpp"
+                },
+                {
+                    "name": "nearest_neighbor", 
+                    "location": "src/nearest_neighbor_bad.cpp"
+                }
+            ]
+        }    
+    ],
+    "contributors" : [
+        {
+            "group": "Xilinx",
+            "url" : "http://www.xilinx.com"
+        }
+    ]
+}

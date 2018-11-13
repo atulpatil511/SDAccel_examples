@@ -1,0 +1,33 @@
+{
+    "runtime": ["OpenCL"],
+    "example" : "host_global",
+    "overview" : [
+        "Host to global memory bandwidth test"
+    ],
+    "os": [
+        "Linux"
+    ],
+    "host_exe": "host_global",
+    "em_cmd" : "./host_global",
+    "hw_cmd" : "../../../utility/nimbix/nimbix-run.py -- ./host_global",
+    "libs": [
+        "xcl2"
+    ],
+    "containers": [
+    {
+       "name": "krnl_host_global",
+       "accelerators": [
+        {
+            "name": "bandwidth", 
+            "location": "src/kernel.cl"
+        }
+       ]
+      }           
+    ],
+    "contributors" : [
+        {
+            "group": "Xilinx",
+            "url" : "http://www.xilinx.com"
+        }
+    ]
+}

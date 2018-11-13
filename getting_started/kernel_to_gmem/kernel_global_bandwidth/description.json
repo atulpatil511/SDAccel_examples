@@ -1,0 +1,39 @@
+{
+    "runtime": ["OpenCL"],
+    "example" : "kernel_global",
+    "overview" : [
+        "Bandwidth test of global to local memory."
+    ],
+    "os": [
+        "Linux"
+    ],
+    "libs": [
+        "xcl2"
+    ],
+    "host_exe": "kernel_global",
+    "em_cmd" : "./kernel_global",
+    "hw_cmd" : "../../../utility/nimbix/nimbix-run.py -- ./kernel_global",
+    "compiler" : {
+             "options" : "-DNDDR_BANKS"
+    },
+    "containers": [
+        {
+            "name": "krnl_kernel_global", 
+            "ldclflags": "--sp bandwidth_1.m_axi_gmem0:bank0 --sp bandwidth_1.m_axi_gmem1:bank1 --sp bandwidth_1.m_axi_gmem2:bank2 --sp bandwidth_1.m_axi_gmem3:bank3",
+            "accelerators": [
+                {
+                    "name": "bandwidth",
+                    "max_memory_ports": "true",
+                    "clflags": "-DNDDR_BANKS",                        
+                    "location": "src/kernel.cl"
+                }
+            ]
+        }
+    ],
+    "contributors" : [
+        {
+            "group": "Xilinx",
+            "url" : "http://www.xilinx.com"
+        }
+    ]
+}

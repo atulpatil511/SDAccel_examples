@@ -1,0 +1,34 @@
+{
+    "runtime": ["OpenCL"],
+    "example" : "Parallel Prefix Sum",
+    "overview" : [
+        "Example of parallel prefix sum"
+    ],
+    "os": [
+        "Linux"
+    ],
+    "host_exe": "sum_scan",
+    "em_cmd" : "./sum_scan",
+    "hw_cmd" : "../../../utility/nimbix/nimbix-run.py -- ./sum_scan",
+    "libs": [
+        "xcl2"
+    ], 
+    "containers": [
+    {
+        "name": "krnl_sum_scan",        
+        "accelerators": [
+        {
+            "name": "krnl_sum_scan",
+            "clflags": "--kernel_frequency 235", 
+            "location": "src/krnl_sum_scan.cl"
+        }
+       ]
+     }            
+    ],
+    "contributors" : [
+        {
+            "group": "Xilinx",
+            "url" : "http://www.xilinx.com"
+        }
+    ]
+}

@@ -1,0 +1,33 @@
+{
+    "runtime": ["OpenCL"],
+    "example" : "Vector Dot-Product",
+    "overview" : [
+        "Simple example of vector dot-product."
+    ],
+    "os": [
+        "Linux"
+    ],
+    "host_exe": "vdotprod",
+    "em_cmd" : "./vdotprod",
+    "hw_cmd" : "../../../utility/nimbix/nimbix-run.py -- ./vdotprod",
+    "libs": [
+        "xcl2"
+    ], 
+    "containers": [
+    {
+        "name": "krnl_vdotprod",        
+        "accelerators": [
+        {
+            "name": "krnl_vdotprod", 
+            "location": "src/krnl_vdotprod.cl"
+        }
+        ]
+     }            
+    ],
+    "contributors" : [
+        {
+            "group": "Xilinx",
+            "url" : "http://www.xilinx.com"
+        }
+    ]
+}

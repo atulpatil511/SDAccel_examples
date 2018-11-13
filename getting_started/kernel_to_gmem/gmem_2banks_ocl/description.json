@@ -1,0 +1,41 @@
+{
+    "runtime": ["OpenCL"],
+    "example": "Global Memory Two Banks (CL)",
+    "overview": [
+        "This example of 2ddr to demonstrate on how to use 2ddr DSA. How to create buffers in each DDR."
+    ],
+    "key_concepts": [ "Multiple Banks"],
+    "keywords": [ "max_memory_ports", "misc:map_connect",
+            "cl_mem_ext_ptr_t", "XCL_MEM_DDR_BANK0", "XCL_MEM_DDR_BANK1", "XCL_MEM_DDR_BANKx",
+            "CL_MEM_EXT_PTR_XILINX"],
+    "os": [
+        "Linux"
+    ],
+    "libs": [
+        "xcl2","bitmap"
+    ],
+    "host_exe": "host",
+    "cmd_args" : "PROJECT/data/input.bmp PROJECT/data/golden.bmp",
+    "em_cmd": "./host ./data/input.bmp ./data/golden.bmp",
+    "hw_cmd": "../../../utility/nimbix/nimbix-run.py -- ./host ./data/input.bmp ./data/golden.bmp",
+    "output_files": "output.bmp",        
+    "containers": [
+        {
+            "name": "apply_watermark", 
+            "ldclflags" : "--sp apply_watermark_1.m_axi_gmem0:bank0 --sp apply_watermark_1.m_axi_gmem1:bank1",
+            "accelerators": [
+                {
+                    "name": "apply_watermark",
+                    "max_memory_ports" : "true",
+                    "location": "src/apply_watermark.cl"
+                }
+            ]
+        }
+    ],
+    "contributors" : [
+        {
+            "group": "Xilinx",
+            "url" : "http://www.xilinx.com"
+        }
+    ]
+}

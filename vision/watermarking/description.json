@@ -1,0 +1,48 @@
+{
+    "runtime": ["OpenCL"],
+    "example": "Watermarking",
+    "overview": [
+        "This is an optimized implementation of a watermarking application to add watermarking to images targeting execution on an SDAccel supported FPGA acceleration card."
+    ],
+    "host_exe": "watermark",
+    "host_srcs": "src/watermarking.cpp",
+    "cmd_args": "PROJECT/data/inputImage.bmp PROJECT/data/golden.bmp",
+    "em_cmd": "./watermark data/inputImage.bmp ./data/golden.bmp",
+    "output_files": "output.bmp",        
+    "libs": [
+        "xcl2", 
+        "bitmap"
+    ], 
+    "containers": [
+        {
+            "name": "apply_watermark", 
+            "ldclflags" : "--sp apply_watermark_1.m_axi_gmem0:bank0 --sp apply_watermark_1.m_axi_gmem1:bank1",
+            "accelerators": [
+                {
+                    "name": "apply_watermark",
+                    "clflags" : "--max_memory_ports apply_watermark", 
+                    "location": "src/krnl_watermarking.cl"
+                }
+            ]    
+        }          
+    ],
+    "perf_fields": ["Board", "Image Size", "Frames / Second"],
+    "performance": [
+        {
+            "system": "xilinx:adm-pcie-ku3:2ddr-xpr",
+            "constraint": "1024 x 768",
+            "metric": "2,658"
+        },
+        {
+            "system": "xilinx:xil-accel-rd-ku115:4ddr-xpr",
+            "constraint": "1024 x 768",
+            "metric": "3526"
+        }
+    ],
+    "contributors": [
+        {
+            "group": "Xilinx",
+            "url": "http://www.xilinx.com"
+        }
+    ]
+}
