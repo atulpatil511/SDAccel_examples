@@ -104,7 +104,7 @@ int main(int argc, char** argv)
         return -1;
     	}
     	cl::Platform newP = cl::Platform::setDefault(plat);
-	cl::Device device = newP;
+	cl::Device device = cl::Plaform::getDevices(CL_DEVICE_TYPE_ALL,&devices);
     	if (newP != plat) {
         std::cout << "Error setting default platform.";
         return -1;
