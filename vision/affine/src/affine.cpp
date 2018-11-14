@@ -91,6 +91,7 @@ int main(int argc, char** argv)
 	
 	 // Filter for a 2.0 platform and set it as the default
     	std::vector<cl::Platform> platforms;
+	std::vector<cl::Device> devices;
     	cl::Platform::get(&platforms);
 	cl::Device::Device(&devices);
 	cl::Device device;
