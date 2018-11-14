@@ -92,6 +92,8 @@ int main(int argc, char** argv)
 	 // Filter for a 2.0 platform and set it as the default
     	std::vector<cl::Platform> platforms;
     	cl::Platform::get(&platforms);
+	cl::Device::Device(&devices);
+	cl::Device device;
     	cl::Platform plat;
     	for (auto &p : platforms) {
         std::string platver = p.getInfo<CL_PLATFORM_VERSION>();
@@ -104,7 +106,7 @@ int main(int argc, char** argv)
         return -1;
     	}
     	cl::Platform newP = cl::Platform::setDefault(plat);
-	cl::Device device = cl::Plaform::getDevices(CL_DEVICE_TYPE_ALL,&devices);
+	//cl::Device device = cl::Plaform::getDevices(CL_DEVICE_TYPE_ALL,&devices);
     	if (newP != plat) {
         std::cout << "Error setting default platform.";
         return -1;
