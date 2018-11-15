@@ -93,7 +93,7 @@ int main(int argc, char** argv)
     	std::vector<cl::Platform> platforms;
 	//std::vector<cl::Device> devices;
     	cl::Platform::get(&platforms);
-	cl::DEVICE device;
+	cl::Device device;
 	//cl::Device::Device(&devices);
 	std::vector<cl::Device> devices = cl::Platform::getDevices(0,&device);
 	 device=devices[0];
