@@ -94,7 +94,7 @@ int main(int argc, char** argv)
 	//std::vector<cl::Device> devices;
     	cl::Platform::get(&platforms);
 	//cl::Device::Device(&devices);
-	std::vector<cl::Device> devices = cl::Platform::getDevices();
+	std::vector<cl::Device> devices = cl::Platform::getDevices(0,&device);
 	cl::Device device=devices[0];
     	cl::Platform plat;
     	for (auto &p : platforms) {
