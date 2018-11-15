@@ -95,8 +95,9 @@ int main(int argc, char** argv)
     	cl::Platform::get(&platforms);
 	cl::Device device;
 	//cl::Device::Device(&devices);
-	std::vector<cl::Device> devices = cl::Platform::getDevices(0,&device);
-	 device=devices[0];
+	//std::vector<cl::Device> devices = cl::Platform::getDevices(0,&device);
+	auto err=platforms[0].getDevices(0,&device);	 
+	device=devices[0];
     	cl::Platform plat;
     	for (auto &p : platforms) {
         std::string platver = p.getInfo<CL_PLATFORM_VERSION>();
