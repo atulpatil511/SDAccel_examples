@@ -91,12 +91,13 @@ int main(int argc, char** argv)
 	
 	 // Filter for a 2.0 platform and set it as the default
     	std::vector<cl::Platform> platforms;
-	//std::vector<cl::Device> devices;
+	std::vector<cl::Device> devices;
     	cl::Platform::get(&platforms);
-	cl::Device device;
+	//cl::Device device;
+	std::vector<cl::Devices> device;
 	//cl::Device::Device(&devices);
 	//std::vector<cl::Device> devices = cl::Platform::getDevices(0,&device);
-	std::vector<cl::Device> devices=platforms[0].getDevices(0,&device);	 
+	 devices=platforms[0].getDevices(0,&device);	 
 	device=devices[0];
     	cl::Platform plat;
     	for (auto &p : platforms) {
