@@ -41,22 +41,12 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
-#include <sys/time.h>
+
 //OpenCL includes
 //#include "xcl2.hpp"
 #include "equalizer.h"
 
 #include <vector>
-double timestamp(){
-double ms=0.0;
-timeval time;
-gettimeofday(&time,NULL);
-ms=(time.tv_sec*1000.0)+(time.tv_usec/1000.0);
-return ms;
-
-
-} 
-
  struct Mat{
 int rows;
 int cols;
@@ -123,7 +113,6 @@ int main(int argc, char* argv[])
      //---------------------------------------------------------------------------
      cl_context context=NULL;
      context=clCreateContext(NULL,numDevices,devices,NULL,NULL,&status);
-    double first_stamp=timestamp();
     cl_command_queue cmdQueue; 
     cmdQueue=clCreateCommandQueue(context,devices[0],0,&status);
 
@@ -144,9 +133,9 @@ int main(int argc, char* argv[])
     //Getting kernel from program
    // OCL_CHECK(err, cl::Kernel krnl(program,"krnl_equalizer", &err));
 
-  //  std::cout << "Image Size: " << inputImage.cols << "x" << inputImage.rows << std::endl;
-//    assert(inputImage.cols == IMAGE_WIDTH_PIXELS);
-  //  assert(inputImage.rows == IMAGE_HEIGHT_PIXELS);
+    std::cout << "Image Size: " << inputImage.cols << "x" << inputImage.rows << std::endl;
+    assert(inputImage.cols == IMAGE_WIDTH_PIXELS);
+    assert(inputImage.rows == IMAGE_HEIGHT_PIXELS);
     unsigned short *eqimage;
     unsigned short *image;
     eqimage=(unsigned short *)malloc(image_size_bytes*16);
@@ -228,7 +217,7 @@ int main(int argc, char* argv[])
    //---------------------------------------------------------------------------------
    //STEP 11 Enqueue the kernel for execution
    //--------------------------------------------------------------------------------
-   cl_event event;
+ 
    status=clEnqueueNDRangeKernel(cmdQueue,kernel,1,NULL,globalWorkSize,NULL,0,NULL,NULL);
 
     /* Copy image to mat */
@@ -243,22 +232,20 @@ int main(int argc, char* argv[])
    // STEP 12 READ the kernel
    //----------------------------------------------------------------------------------
 
-   clEnqueueReadBuffer(cmdQueue,outBufVec,CL_TRUE,0,sizeof(size_t),(void *)"out.bmp",1,NULL,&event);
-    
-   double second_stamp=timestamp();
-  double time_elapsed=second_stamp-first_stamp;
-  printf("\nTotal time elspased is %f \n",time_elapsed);
+   clEnqueueReadBuffer(cmdQueue,outBufVec,CL_TRUE,0,sizeof(size_t),(void *)"out.bmp",0,NULL,NULL);
+  
    // OCL_CHECK(err, err = event.getProfilingInfo<uint64_t>(CL_PROFILING_COMMAND_START,&nstimestart));
     //OCL_CHECK(err, err = event.getProfilingInfo<uint64_t>(CL_PROFILING_COMMAND_END,&nstimeend));
     //auto duration = nstimeend-nstimestart;
 
-   /* for(int i = 0; i < IMAGE_HEIGHT_PIXELS/32; i++) {
+    for(int i = 0; i < IMAGE_HEIGHT_PIXELS/32; i++) {
         for(int j = 0; j < IMAGE_WIDTH_PIXELS; j++) {
             for(int k = 0; k < 32; k++) {
-               result_eq.at<ushort>(i*32 + k, j) = eqimage[i*IMAGE_WIDTH_PIXELS*32 + j*32 + k];
+               //result_eq.at<ushort>(i*32 + k, j) = eqimage[i*IMAGE_WIDTH_PIXELS*32 + j*32 + k];
+               result_eq
             }
         }
-    }*/
+    }
 
 //    std::cout << "Kernel Duration: " << duration << " ns" << std::endl;
 

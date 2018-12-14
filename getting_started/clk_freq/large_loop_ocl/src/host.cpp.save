@@ -1,0 +1,201 @@
+/**********
+Copyright (c) 2018, Xilinx, Inc.
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification,
+are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice,
+this list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation
+and/or other materials provided with the distribution.
+
+3. Neither the name of the copyright holder nor the names of its contributors
+may be used to endorse or promote products derived from this software
+without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+**********/
+
+/*******************************************************************************
+Description: 
+
+    This is a CNN (Convolutional Neural Network) convolutional layer based
+    example to showcase the effectiveness of using multiple compute units when
+    the base algorithm consists of multiple nested loops with large loop count.    
+
+*******************************************************************************/
+#include <stdint.h>
+#include <iostream>
+#include <cstring>
+#include <cstdio>
+#include <cassert>
+#include <unistd.h>
+#include <CL/cl.h>
+//OpenCL utility layer include
+//#include "xcl2.hpp"
+#include "defns.h"
+
+#define WORK_GROUP 4 
+#define WORK_ITEM_PER_GROUP 1
+
+#define DATA_SIZE OChan * OSize * OSize
+
+/*uint64_t get_duration_ns (const cl::Event &event) {
+    uint64_t nstimestart, nstimeend;
+    event.getProfilingInfo<uint64_t>(CL_PROFILING_COMMAND_START,&nstimestart);
+    event.getProfilingInfo<uint64_t>(CL_PROFILING_COMMAND_END,&nstimeend);
+    return(nstimeend-nstimestart);
+}*/
+
+// Software solution
+/*void convGolden(int *weight, int *image, int *out, int i_chan, int o_chan)
+{
+    // Runs over output filters
+    for(int output = 0; output < o_chan; output++){
+        // Runs over output pixel in Y-direction
+        for(int y = 0; y < OSize; y++){
+            // Runs over output pixel in X-direction
+            for(int x = 0; x < OSize; x++){
+                short acc = 0;
+                // Runs over each input channel of input feature map
+                for(int input = 0; input < i_chan; input++){
+                    // Runs over filter window 
+                    for(int i = 0; i < WSize; i++){
+                        // Runs over filter windows 
+                        for(int j = 0; j < WSize; j++){
+
+                            // Calculate input padding boundaries
+                            int xVal = x*Stride + j-Padding, yVal = y*Stride + i-Padding;
+
+                            // Convolution operation
+                            if(yVal >= 0 && yVal < ISize && xVal >= 0 && xVal < ISize){
+                                acc += (short) image[(input*ISize + yVal)*ISize + xVal] * 
+                                       (short) weight[((output*WInChan + input)*WSize + i)*WSize + j];
+                            }
+                        }
+                        // Update each output pixel / output filter
+                        out[(output*OSize + y)*OSize + x] = acc;
+                    }
+                }
+            }
+        }
+    }
+}*/
+
+
+uint64_t run_opencl_cnn(
+
+
+   // std::vector<cl::Device> &devices,
+   // cl::CommandQue/**********
+Copyright (c) 2018, Xilinx, Inc.
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification,
+are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice,
+this list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright notice,
+this list of conditions and the following disclaimer in the documentation
+and/or other materials provided with the distribution.
+
+3. Neither the name of the copyright holder nor the names of its contributors
+may be used to endorse or promote products derived from this software
+without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+**********/
+
+/*******************************************************************************
+Description: 
+
+    This is a CNN (Convolutional Neural Network) convolutional layer based
+    example to showcase the effectiveness of using multiple compute units when
+    the base algorithm consists of multiple nested loops with large loop count.    
+
+*******************************************************************************/
+#include <stdint.h>
+#include <iostream>
+#include <cstring>
+#include <cstdio>
+#include <cassert>
+#include <unistd.h>
+#include <CL/cl.h>
+//OpenCL utility layer include
+//#include "xcl2.hpp"
+#include "defns.h"
+
+#define WORK_GROUP 4 
+#define WORK_ITEM_PER_GROUP 1
+
+#define DATA_SIZE OChan * OSize * OSize
+
+/*uint64_t get_duration_ns (const cl::Event &event) {
+    uint64_t nstimestart, nstimeend;
+    event.getProfilingInfo<uint64_t>(CL_PROFILING_COMMAND_START,&nstimestart);
+    event.getProfilingInfo<uint64_t>(CL_PROFILING_COMMAND_END,&nstimeend);
+    return(nstimeend-nstimestart);
+}*/
+
+// Software solution
+/*void convGolden(int *weight, int *image, int *out, int i_chan, int o_chan)
+{
+    // Runs over output filters
+    for(int output = 0; output < o_chan; output++){
+        // Runs over output pixel in Y-direction
+        for(int y = 0; y < OSize; y++){
+            // Runs over output pixel in X-direction
+            for(int x = 0; x < OSize; x++){
+                short acc = 0;
+                // Runs over each input channel of input feature map
+                for(int input = 0; input < i_chan; input++){
+                    // Runs over filter window 
+                    for(int i = 0; i < WSize; i++){
+                        // Runs over filter windows 
+                        for(int j = 0; j < WSize; j++){
+
+                            // Calculate input padding boundaries
+                            int xVal = x*Stride + j-Padding, yVal = y*Stride + i-Padding;
+
+                            // Convolution operation
+                            if(yVal >= 0 && yVal < ISize && xVal >= 0 && xVal < ISize){
+                                acc += (short) image[(input*ISize + yVal)*ISize + xVal] * 
+                                       (short) weight[((output*WInChan + input)*WSize + i)*WSize + j];
+                            }
+                        }
+                        // Update each output pixel / output filter
+                        out[(output*OSize + y)*OSize + x] = acc;
+                    }
+                }
+            }
+        }
+    }
+}*/
+
+
+uint64_t run_opencl_cnn(
+
+
+   // std::vector<cl::Device> &devices,
+   // cl::CommandQue

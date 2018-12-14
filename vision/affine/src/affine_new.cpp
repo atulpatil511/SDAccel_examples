@@ -36,16 +36,26 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <iostream>
 #include <CL/cl.h>
 #include <vector>
-#include "/home/atul/Desktop/SDAccel_examples/libs/bitmap/bitmap.h"
+#include "/home/atul1/Desktop/SDAccel_examples/libs/bitmap/bitmap.h"
+#include "sys/time.h"
 //#include "/home/atul/Desktop/SDAccel_examples/libs/xcl2/xcl2.hpp"
 
 #define X_SIZE 512
 #define Y_SIZE 512
 
+double timestamp(){
+double ms=0.0;
+timeval time;
+gettimeofday(&time,NULL);
+ms=(time.tv_sec*1000.0)+(time.tv_usec/1000.0);
+return ms;
+
+
+}
 int main(int argc, char** argv)
 {
-	int i;
-	char buffer[10240];
+	int i,j;
+	//char buffer[10240];
 	if (argc != 2)
 	{
 		printf("Usage: %s <image> \n", argv[0]) ;
@@ -54,27 +64,91 @@ int main(int argc, char** argv)
    
 	FILE *input_file;               
 	FILE *output_file;
-	
+
 
 
 	size_t vector_size_bytes = sizeof(unsigned short) * Y_SIZE*X_SIZE;
-	//unsigned short *input_image;
-	//unsigned short *output_image;
-	//**************************************************************************************************/
-	//Next line madhe jay syntax lihla ahe te kalat nahiye "input_image" nemka kai ahe te pan kalal nahiye
+	unsigned short *input_image;
+	unsigned short *output_image;
 	//std::vector<unsigned short,aligned_allocator<unsigned short>> input_image(Y_SIZE*X_SIZE);
-	
-	//input_image=(unsigned short *)calloc(262144,sizeof(unsigned short));
+	input_image=(unsigned short *)malloc(262144*sizeof(unsigned short));
 	cl_int err;
-	
-	//output_image=(unsigned short *)calloc(262144,sizeof(unsigned short));
+	output_image=(unsigned short *)malloc(262144*sizeof(unsigned short));
 	//std::vector<unsigned short,aligned_allocator<unsigned short>> output_image(Y_SIZE*X_SIZE);
-		
-	unsigned short input_image[512][512];
-	unsigned short output_image[1000][1000];
+
+
 	
-	//unsigned short *input_image=(unsigned short *)malloc(X_SIZE*Y_SIZE*sizeof(unsigned short));
-	//unsigned short *output_image=(unsigned short *)malloc(X_SIZE*Y_SIZE*sizeof(unsigned short));
+	//----------------------------------------------------
+	//STEP 1: Discover and Initialize the platforms
+	//---------------------------------------------------
+
+	cl_int status;
+	cl_platform_id platforms[100];
+	cl_uint platforms_n = 0;
+	status=clGetPlatformIDs(100, platforms, &platforms_n);
+	printf("=== %d OpenCL platform(s) found: ===\n", platforms_n);
+	for (int i=0; i<platforms_n; i++)
+	{
+		char buffer[10240];
+		printf("  -- %d --\n", i);
+		status=clGetPlatformInfo(platforms[i], CL_PLATFORM_PROFILE, 10240, buffer, NULL);
+		//printf("  PROFILE = %s\n", buffer);
+		status=clGetPlatformInfo(platforms[i], CL_PLATFORM_VERSION, 10240, buffer, NULL);
+		printf("  VERSION = %s\n", buffer);
+		status=clGetPlatformInfo(platforms[i], CL_PLATFORM_NAME, 10240, buffer, NULL);
+		printf("  NAME = %s\n", buffer);
+		status=clGetPlatformInfo(platforms[i], CL_PLATFORM_VENDOR, 10240, buffer, NULL);
+		printf("  VENDOR = %s\n", buffer);
+		status=clGetPlatformInfo(platforms[i], CL_PLATFORM_EXTENSIONS, 10240, buffer, NULL);
+		//printf("  EXTENSIONS = %s\n", buffer);
+	}
+
+	if (platforms_n == 0)
+	{	
+		printf("No OpenCL platform found!\n\n");
+		//return 1;
+	}
+
+	//-------------------------------------------------------------
+	//STEP 2: Discover and Initialize the devices
+	//-------------------------------------------------------------
+	cl_device_id devices[100];
+	cl_uint numDevices = 0;
+	// CL_CHECK(clGetDeviceIDs(NULL, CL_DEVICE_TYPE_ALL, 100, devices, &numDevices));
+	status=clGetDeviceIDs(platforms[0], CL_DEVICE_TYPE_GPU, 100, devices, &numDevices);
+
+	printf("=== %d OpenCL device(s) found on platform:\n", platforms_n);
+	for (int i=0; i<numDevices; i++)
+	{
+		char buffer[10240];
+		cl_uint buf_uint;
+		cl_ulong buf_ulong;
+		printf("  -- %d --\n", i);
+		status=clGetDeviceInfo(devices[i], CL_DEVICE_NAME, sizeof(buffer), buffer, NULL);
+		printf("  DEVICE_NAME = %s\n", buffer);
+		status=clGetDeviceInfo(devices[i], CL_DEVICE_VENDOR, sizeof(buffer), buffer, NULL);
+		printf("  DEVICE_VENDOR = %s\n", buffer);
+		status=clGetDeviceInfo(devices[i], CL_DEVICE_VERSION, sizeof(buffer), buffer, NULL);
+		//printf("  DEVICE_VERSION = %s\n", buffer);
+		status=clGetDeviceInfo(devices[i], CL_DRIVER_VERSION, sizeof(buffer), buffer, NULL);
+		//printf("  DRIVER_VERSION = %s\n", buffer);
+		status=clGetDeviceInfo(devices[i], CL_DEVICE_MAX_COMPUTE_UNITS, sizeof(buf_uint), &buf_uint, NULL);
+		printf("  DEVICE_MAX_COMPUTE_UNITS = %u\n", (unsigned int)buf_uint);
+		status=clGetDeviceInfo(devices[i], CL_DEVICE_MAX_CLOCK_FREQUENCY, sizeof(buf_uint), &buf_uint, NULL);
+		//printf("  DEVICE_MAX_CLOCK_FREQUENCY = %u\n", (unsigned int)buf_uint);
+		status=clGetDeviceInfo(devices[i], CL_DEVICE_GLOBAL_MEM_SIZE, sizeof(buf_ulong), &buf_ulong, NULL);
+		//printf("  DEVICE_GLOBAL_MEM_SIZE = %llu\n", (unsigned long long)buf_ulong);
+		printf("\n");
+	}
+
+	if (numDevices == 0)
+	{	printf("No OpenCL device found!\n\n");
+		//return 1;
+	}
+
+
+
+
 	// Read the bit map file into memory and allocate memory for the final image
 	std::cout << "Reading input image...\n";
 	
@@ -92,80 +166,16 @@ int main(int argc, char** argv)
 	
 	printf("\n");
 	printf("   Reading RAW Image\n");
-	size_t items_read = fread(input_image, vector_size_bytes,1,input_file);    // Reads the data from the given stream into 		array pointed to by pointer. Here Stream = input_file Array pointed to by ptr= input_image.data()
+	size_t items_read = fread(input_image, vector_size_bytes,1,input_file);    // Reads the data from the given stream into array pointed to by pointer. Here Stream = input_file Array pointed to by ptr= input_image.data()
 	printf("   Bytes read = %d\n\n", (int)(items_read* sizeof input_image));
 	
-	//The get_xil_devices will return vector of Xilinx Devices
-	// get_xil_devices is a utility API which will find the xilinx platforms and will return the list
-	//of devices connected to xilinx platform
 	
-	//std::vector<cl::Device> devices = xcl::get_xil_devices();
-	//cl::Device device = devices[0];
-	
-	 // Filter for a 2.0 platform and set it as the default
-    	//----------------------------------------------------
-	//STEP 1: Discover and Initialize the platforms
-	//---------------------------------------------------
-	cl_int status;
-	cl_uint numPlatforms=0;
-	cl_platform_id *platforms=NULL;
-	
-	status=clGetPlatformIDs(0,NULL,&numPlatforms);
-
-	platforms=(cl_platform_id*)malloc(numPlatforms*sizeof(cl_platform_id));
-	status=clGetPlatformIDs(numPlatforms,platforms,NULL);
-	
-	/*std::vector<cl::Platform> platforms;
-	std::vector<cl::Device> devices;
-    	cl::Platform::get(&platforms);*/
-	
-	//cl::Device device;
-	//std::vector<cl::Device> device;
-	//cl::Device::Device(&devices);
-	//std::vector<cl::Device> devices = cl::Platform::getDevices(0,&device);
-	 //devices=cl::Platform::getDevices(0,&device);	 
-	 
-	//-------------------------------------------------------------
-	//STEP 2: Discover and Initialize the devices
-	//-------------------------------------------------------------
-	cl_uint numDevices=0;
-	cl_device_id *devices=NULL;
-	status=clGetDeviceIDs(platforms[0],CL_DEVICE_TYPE_ALL,0,NULL,&numDevices);
-	devices=(cl_device_id*)malloc(numDevices*sizeof(cl_device_id));
-	status=clGetDeviceIDs(platforms[0],CL_DEVICE_TYPE_ALL,numDevices,devices,NULL);
-
-	err=clGetDeviceInfo(devices[i],CL_DEVICE_NAME,10240,buffer,NULL);
-
-	/*device=devices[0];
-    	cl::Platform plat;
-    	for (auto &p : platforms) {
-        std::string platver = p.getInfo<CL_PLATFORM_VERSION>();
-        if (platver.find("OpenCL 2.") != std::string::npos) {
-            plat = p;
-        	}
-    	}
-    	if (plat() == 0)  {
-        std::cout << "No OpenCL 2.0 platform found.";
-        return -1;
-    	}
-    	cl::Platform newP = cl::Platform::setDefault(plat);
-	//cl::Device device = cl::Plaform::getDevices(CL_DEVICE_TYPE_ALL,&devices);
-    	if (newP != plat) {
-        std::cout << "Error setting default platform.";
-        return -1;
-    	}*/
-
 	//-------------------------------------------------------
 	//STEP 3 Creating Context
 	//-------------------------------------------------------
 
 	cl_context context=NULL;
 	context=clCreateContext(NULL,numDevices,devices,NULL,NULL,&status);
-	
-	//Creating context and Command Queue for selected Device    [STEP 3  and STEP 4]
-	//OCL_CHECK(err, cl::Context context(device, NULL, NULL, NULL, &err));
-  	//OCL_CHECK(err, cl::CommandQueue q(context, device,CL_QUEUE_PROFILING_ENABLE, &err));
-	//OCL_CHECK(err, std::string device_name = device.getInfo<CL_DEVICE_NAME>(&err));
 	
 	//-------------------------------------------------------
 	//STEP 4 Creating command queue
@@ -201,7 +211,7 @@ int main(int argc, char** argv)
 	inBufVec=clCreateBuffer(context,CL_MEM_READ_ONLY,sizeof(int),NULL,&status);
 	outBufVec=clCreateBuffer(context,CL_MEM_WRITE_ONLY,sizeof(int),NULL,&status);
 
-
+	
 
 	/*std::vector<cl::Memory> inBufVec, outBufVec;
 	OCL_CHECK(err, cl::Buffer imageToDevice(context,CL_MEM_USE_HOST_PTR | CL_MEM_READ_ONLY, vector_size_bytes, input_image.data(), 	&err));
@@ -228,6 +238,9 @@ int main(int argc, char** argv)
 	cl_program program=clCreateProgramWithSource(context,1,(const char**)&input_file,NULL,&status);
 	status=clBuildProgram(program,numDevices,devices,NULL,NULL,NULL);
 
+
+
+	double first_stamp=timestamp();
 	//---------------------------------------------------------------------
 	//STEP 8 create the kernel
 	//------------------------------------------------------------------
@@ -255,7 +268,7 @@ int main(int argc, char** argv)
 	//--------------------------------------------------
 	//STEP 12 READ the kernel 
 	//----------------------------------------------------
-	clEnqueueReadBuffer(cmdQueue,outBufVec,CL_TRUE,0,sizeof(size_t),(void*)"transformed_image.raw",0,NULL,NULL);
+	clEnqueueReadBuffer(cmdQueue,outBufVec,CL_TRUE,0,sizeof(size_t),(void*)"transformed_image_1.raw",0,NULL,NULL);
 
 
 	// Launch the kernel  [STEP 11]
@@ -263,14 +276,15 @@ int main(int argc, char** argv)
 
 	// Read back the image from the kernel  [STEP 12]
 	std::cout << "Reading output image and writing to file...\n";
-	output_file = fopen("transformed_image.raw", "wb");
+	output_file = fopen("transformed_image_1.raw", "wb");
 	if (!output_file)
 	{
 		printf("Error: Unable to open output image file!\n");
 		return 1;
 	}
-
-
+	double second_stamp=timestamp();
+	double time_elapsed=second_stamp-first_stamp;
+	printf("\nTotal time elspased is %f \n",time_elapsed);
 	// The result of the previous kernel execution will need to be retrieved in
         // order to view the results. This call will write the data from the
         // buffer_result cl_mem object to the source_results vector
@@ -283,12 +297,12 @@ int main(int argc, char** argv)
 	clReleaseMemObject(inBufVec);
 	clReleaseMemObject(outBufVec);
 	clReleaseContext(context);
-	free(platforms);
-	free(devices);
-
+	
 	printf("   Writing RAW Image\n");
 	size_t items_written = fwrite(output_image, vector_size_bytes, 1, output_file);
 	printf("   Bytes written = %d\n\n", (int)(items_written * sizeof output_image));
 
 	return 0 ;
 }
+
+

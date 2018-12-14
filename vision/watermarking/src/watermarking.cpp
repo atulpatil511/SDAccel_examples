@@ -29,8 +29,8 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <iostream>
 #include <vector>
 //Includes
-#include "xcl2.hpp"
-#include "bitmap.h"
+//#include "xcl2.hpp"
+#include "/home/atul1/Desktop/SDAccel_examples/libs/bitmap/bitmap.h"
 
 int main(int argc, char* argv[])
 {
